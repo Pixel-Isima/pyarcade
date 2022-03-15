@@ -1,0 +1,43 @@
+{
+  "misc": {
+    "ICON": {
+      "type": "Image",
+      "image": "icon.png"
+    },
+    "PIXEL_LOGO": {
+      "type": "Image",
+      "image": "pixel_logo.png"
+    }
+  },
+  "ui": {
+    "TOOLBAR_BACKGROUND": {
+      "type": "Frame",
+      "margin": [ 2, 0, 0, 0 ],
+      "image": "toolbar_bg.png"
+    },
+    "CLOCK_BACKGROUND": {
+      "type": "Frame",
+      "margin": [ 0, 4, 0, 4 ],
+      "image": "clock_bg.png"
+    },
+    "CARD_BACKGROUND" : {
+      "type": "Frame",
+      "margin": [ 2, 2, 2, 2 ],
+      "image": "card_bg.png"
+    }
+  },
+  "icon": {
+    "JOYSTICK": {
+      "type": "Image",
+      "image": "icon_joystick.png"
+    }
+  },
+  "colors" : {
+    "background" : [77, 55, 0]
+  },
+  "metrics" : {
+    
+  }
+}
+
+
