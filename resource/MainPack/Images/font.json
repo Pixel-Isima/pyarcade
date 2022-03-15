@@ -1,0 +1,7 @@
+{
+	"DEFAULT": {
+	  "image": "default.png",
+	  "canvas" : [ 9, 11 ]
+	}
+}
+
