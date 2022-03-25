@@ -15,6 +15,10 @@ class Cards(BaseElement):
     _size : Size
     _resized : True
 
+    @property
+    def current(self):
+        return self._position
+
     def __init__(self, elements : list[CardInfo], size: Size):
         super(Cards, self).__init__(size.tuple, pygame.SRCALPHA)
 
@@ -122,7 +126,6 @@ class Cards(BaseElement):
 
     def refresh(self):
         import math
-        from random import randint
 
         card_margin = Resource.getMetric(Resource.METRIC_CARD_MARGIN)
 

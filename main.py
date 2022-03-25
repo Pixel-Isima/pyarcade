@@ -172,6 +172,8 @@ class Game:
                         match event.key:
                             case pygame.K_r:
                                 reload_pressed = False
+                            case pygame.K_KP_ENTER | pygame.K_RETURN:
+                                GameDB.launch_game(self.cards.current)
 
             if k_esc:
                 self.run = False

@@ -6,35 +6,40 @@
       "copyright": "1990 Namco",
       "type": "mame",
       "card-thumbnail": "pacman-90x.png",
-      "exec": "pacman"
+      "exec": "pacman",
+      "scale-filter": false
     },
     {
       "name": "Tetris",
       "copyright": "1988 Atari Games",
       "type": "mame",
       "card-thumbnail": "tetris-90x.png",
-      "exec": "atetris"
+      "exec": "atetris",
+      "scale-filter": false
     },
     {
       "name": "Space invaders",
       "copyright": "1978 Taito / Midway",
       "type": "mame",
       "card-thumbnail": "invaders-90x.png",
-      "exec": "invaders"
+      "exec": "invaders",
+      "scale-filter": false
     },
     {
       "name": "Donkey Kong",
       "copyright": "1981 Nintendo of America",
       "type": "mame",
       "card-thumbnail": "dkong-90x.png",
-      "exec": "dkong"
+      "exec": "dkong",
+      "scale-filter": false
     },
     {
       "name": "Tekken 3",
       "copyright": "1996 Namco",
       "type": "mame",
       "card-thumbnail": "tekken3-90x.png",
-      "exec": "tekken3"
+      "exec": "tekken3",
+      "scale-filter": true
     }
   ]
 }

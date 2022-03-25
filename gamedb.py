@@ -47,25 +47,74 @@ class GameType(enum.Enum):
 
         raise ValueError("{} is not a valid game type".format(text))
 
-    def gen_command(self, path: str, name: str, executor: str) -> str:
-        match self:
-            case GameType.NATIVE:
-                return "./{}/{}/{}".format(path, name, executor)
-            case GameType.MAME:
-                return "mame -rp {} {} -nofilter -skip_gameinfo".format(path, executor)
+class MameGameInfo:
+    _executor: str
+    _scale_effect: bool
+    _game_path: str
+
+    def __init__(self, executor: str, scale_effect: bool, game_path: str):
+        self._executor = executor
+        self._scale_effect = scale_effect
+        self._game_path = game_path
+
+    @staticmethod
+    def from_data(data, game_path: str) -> MameGameInfo:
+        return MameGameInfo(
+            str(data["exec"]),
+            bool(data["scale-filter"]),
+            str(game_path)
+        )
+
+    @property
+    def exec_args(self) -> list[str]:
+        return [
+            "mame",
+            "-rp",
+            self._game_path,
+            "-skip_gameinfo",
+            "-nofilter" if self._scale_effect else "-filter",
+            self._executor
+        ]
+
+class NativeGameInfo:
+    _args: list[str]
+
+    def __init__(self, args: list[str]):
+        self._args = args
+
+    @staticmethod
+    def from_data(data) -> NativeGameInfo:
+        tmp = data["args"]
+        size = len(tmp)
+        ret = [""] * size
+
+        for i in range(size):
+            ret[i] = str(tmp[i])
+
+        return NativeGameInfo(ret)
+
 class GameInfo:
     _name: str
     _copyright: str
-    _type: GameType
     _thumbnail: pygame.Surface
-    _executor: str
 
-    def __init__(self, name: str, game_copyright: str, game_type: GameType, thumbnail: pygame.Surface, executor: str):
+    _type: GameType
+    _game_info: NativeGameInfo | MameGameInfo
+
+    def __init__(
+            self,
+            name: str,
+            game_copyright: str,
+            game_type: GameType,
+            thumbnail: pygame.Surface,
+            game_info: MameGameInfo | NativeGameInfo
+    ):
         self._name = name
         self._copyright = game_copyright
-        self._type = game_type
         self._thumbnail = thumbnail
-        self._executor = executor
+
+        self._type = game_type
+        self._game_info = game_info
 
     @property
     def name(self) -> str:
@@ -76,8 +125,8 @@ class GameInfo:
         return self._copyright
 
     @property
-    def executor(self) -> str:
-        return self._executor
+    def exec_args(self) -> list[str]:
+        return self._game_info.exec_args
 
     @property
     def thumbnail(self) -> pygame.Surface:
@@ -117,13 +166,21 @@ class GameDB:
         GameDB._games = games
 
     @staticmethod
+    def get_game_info(game, game_type: GameType) -> NativeGameInfo | MameGameInfo:
+        match game_type:
+            case GameType.NATIVE: return NativeGameInfo.from_data(game)
+            case GameType.MAME: return MameGameInfo.from_data(game, GameDB._mame_path)
+
+    @staticmethod
     def parse_game(game) -> GameInfo:
+        game_type = GameType.from_text(game["type"])
+
         return GameInfo(
             game["name"],
             game["copyright"],
-            GameType.from_text(game["type"]),
+            game_type,
             pygame.image.load("{}/thumbnails/{}".format(GameDB._db_path, game["card-thumbnail"])),
-            game["exec"]
+            GameDB.get_game_info(game, game_type)
         )
 
     @staticmethod
@@ -149,3 +206,23 @@ class GameDB:
             )
 
         return ret
+
+    @staticmethod
+    def launch_game(game_id: int) -> bool:
+        from subprocess import Popen
+        from pynput.keyboard import Key, Listener
+
+        proc = Popen(GameDB._games[game_id].exec_args)
+
+        with Listener(on_release=GameDB.on_key_release) as listener:
+            listener.join()
+
+        proc.terminate()
+
+        return proc.returncode == 0
+
+    @staticmethod
+    def on_key_release(key):
+        from pynput.keyboard import Key
+
+        return key == Key.alt
