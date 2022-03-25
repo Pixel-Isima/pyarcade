@@ -1,7 +1,9 @@
 {
 	"DEFAULT": {
-	  "image": "default.png",
-	  "canvas" : [ 9, 11 ]
+	  	"image": "default.png",
+	  	"canvas" : [ 9, 11 ],
+		"baseline" : 3,
+		"ascender-height" : 6
 	}
 }
 

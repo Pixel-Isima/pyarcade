@@ -37,8 +37,3 @@ class BaseElement(pygame.Surface):
     def event_right(self): raise NotImplementedError()
     def event_top(self): raise NotImplementedError()
     def event_bottom(self): raise NotImplementedError()
-
-    def event_mouse_hover(self, pos): raise NotImplementedError()
-    def event_mouse_click(self, pos, button): raise NotImplementedError()
-    def event_mouse_leave(self): raise NotImplementedError()
-    def event_mouse_scroll(self, pos, amount): raise NotImplementedError()

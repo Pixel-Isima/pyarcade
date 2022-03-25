@@ -2,7 +2,7 @@
 # Filename: graphics/layers.py                                                 #
 # Created by: Venceslas Duet                                                   #
 # Created at: 03-15-2018                                                       #
-# Last update at: 03-15-2022                                                   #
+# Last update at: 03-16-2022                                                   #
 # Description: High level class for manage layers and automatically update     #
 # rendering of graphical elements                                              #
 # Licence: GNU GPL v3.0 (See LICENSE.MD for more information)                  #
@@ -10,18 +10,6 @@
 
 import pygame
 import enum
-
-
-def correct_tuple(element, tuple_type, length=-1):
-    if not isinstance(element, tuple):
-        return False
-    length = length if length > 0 else len(element)
-    if len(element) != length:
-        return False
-    for i in range(length):
-        if type(element[i]) != tuple_type:
-            return False
-    return True
 
 
 class ClipPosition(enum.Enum):
@@ -34,17 +22,14 @@ class ClipPosition(enum.Enum):
 
 
 class LayerMember:
-    def __init__(self, surface, pos, layer, clip, scale):
-        if not isinstance(surface, pygame.Surface):
-            raise TypeError("surface needs to be a pygame.Surface")
-        if not correct_tuple(pos, int, 2):
-            raise TypeError("pos needs to be (int x, int y)")
-        if not isinstance(layer, int):
-            raise TypeError("layer needs to be an integer")
-        if not correct_tuple(clip, ClipPosition, 2):
-            raise TypeError("clip needs to be (ClipPosition clip_h, ClipPosition clip_v)")
-        if not isinstance(scale, float):
-            raise TypeError("scale needs to be a float")
+    def __init__(
+            self,
+            surface: pygame.Surface,
+            pos: tuple[int, int],
+            layer: int,
+            clip: tuple[ClipPosition, ClipPosition],
+            scale: float
+    ):
         if scale <= 0:
             raise ValueError("scale needs to have a number strictly highest of 0")
         self.surface = surface
@@ -53,27 +38,19 @@ class LayerMember:
         self.clip = clip
         self.scale = scale
 
-    def change_surface(self, surface):
-        if not isinstance(surface, pygame.Surface):
-            raise TypeError("surface needs to be a pygame.Surface")
+    def change_surface(self, surface: pygame.Surface):
         self.surface = surface
 
-    def move(self, new_pos):
-        if not correct_tuple(new_pos, int, 2):
-            raise TypeError("new_pos needs to be (int x, int y)")
+    def move(self, new_pos: tuple[int, int]):
         self.pos = new_pos
 
-    def resize(self, scale):
-        if not isinstance(scale, float):
-            raise TypeError("scale needs to be a float")
+    def resize(self, scale: float):
         self.scale = scale
 
-    def set_clip(self, clip):
-        if not correct_tuple(clip, ClipPosition, 2):
-            raise TypeError("clip needs to be (ClipPosition clip_h, ClipPosition clip_v)")
+    def set_clip(self, clip: tuple[ClipPosition, ClipPosition]):
         self.clip = clip
 
-    def get_position(self, canvas_size):
+    def get_position(self, canvas_size: tuple[int, int]):
         if canvas_size[0] <= 0 or canvas_size[1] <= 0:
             raise ValueError("canvas_size needs to have content upper to (0,0)")
         x = 0
@@ -99,13 +76,12 @@ class LayerMember:
 
 
 class Layer(pygame.Surface):
-    def __init__(self, canvas_size, layers, default_layer=0):
-        if not correct_tuple(canvas_size, int, 2):
-            raise TypeError("canvas_size needs to be (int width, int height)")
-        if not isinstance(layers, int):
-            raise TypeError("layers needs to be a integer")
-        if not isinstance(default_layer, int):
-            raise TypeError("default_layer needs to be a integer")
+    def __init__(
+            self,
+            canvas_size: tuple[int, int],
+            layers: int,
+            default_layer: int = 0
+    ):
         if canvas_size[0] <= 0 or canvas_size[1] <= 0:
             raise ValueError("canvas_size needs to have content upper to (0,0)")
         if layers <= 0:
@@ -127,13 +103,14 @@ class Layer(pygame.Surface):
 
         self.default_layer = default_layer
 
-    def add_surface(self, surface, position, layer=-1, clip=(ClipPosition.LEFT, ClipPosition.TOP), zoom=1.0):
-        if not isinstance(surface, pygame.Surface):
-            raise TypeError("surface needs to be a pygame.Surface")
-        if not correct_tuple(position, int, 2):
-            raise TypeError("position needs to be (int x, int y)")
-        if not isinstance(layer, int):
-            raise TypeError("layer needs to be a integer")
+    def add_surface(
+            self,
+            surface: pygame.Surface,
+            position: tuple[int, int],
+            layer: int = -1,
+            clip: tuple[ClipPosition, ClipPosition] = (ClipPosition.LEFT, ClipPosition.TOP),
+            zoom: float = 1.0
+    ):
         if layer == -1:
             layer = self.default_layer
         if layer not in range(self.layer_cnt):
@@ -142,19 +119,13 @@ class Layer(pygame.Surface):
         self.layer_modified[layer] = True
         return len(self.surfaces) - 1
 
-    def change_surface(self, index, surface):
-        if not isinstance(index, int):
-            raise TypeError("index needs to be a integer")
-        if not isinstance(surface, pygame.Surface):
-            raise TypeError("surface needs to be a pygame.Surface")
+    def change_surface(self, index: int, surface: pygame.Surface):
         if index not in range(len(self.surfaces)):
             raise ValueError("index needs to be a surface list index")
         self.surfaces[index].change_surface(surface)
         self.layer_modified[self.surfaces[index].layer] = True
 
-    def change_visibility(self, layer, visible=True):
-        if not isinstance(layer, int):
-            raise TypeError("layer needs to be an integer")
+    def change_visibility(self, layer: int, visible: bool = True):
         if layer not in range(self.layer_cnt):
             raise ValueError("layer needs to be between 0 and layer count")
         self.layer_show[layer] = visible
@@ -166,9 +137,7 @@ class Layer(pygame.Surface):
                 self.update_layer(i)
                 self.blit(self.layer[i], (0, 0))
 
-    def update_layer(self, layer):
-        if not isinstance(layer, int):
-            raise TypeError("layer needs to be an integer")
+    def update_layer(self, layer: int):
         if layer not in range(self.layer_cnt):
             raise ValueError("layer needs to be between 0 and layer count")
         if self.layer_modified[layer]:
@@ -183,42 +152,24 @@ class Layer(pygame.Surface):
                     self.layer[layer].blit(surf, pos)
             self.layer_modified[layer] = False
 
-    def relative_move(self, index, pos):
-        if not isinstance(index, int):
-            raise TypeError("index needs to be an integer")
-        if not correct_tuple(pos, int, 2):
-            raise TypeError("pos needs to be (int x, int y)")
+    def relative_move(self, index: int, pos: tuple[int, int]):
         if index not in range(len(self.surfaces)):
             raise ValueError("index needs to be between 0 and length of surfaces list")
         self.surfaces[index].pos = (self.surfaces[index].pos[0] + pos[0],
                                     self.surfaces[index].pos[1] + pos[1])
         self.layer_modified[self.surfaces[index].layer] = True
 
-    def absolute_move(self, index, pos):
-        if not isinstance(index, int):
-            raise TypeError("index needs to be an integer")
-        if not correct_tuple(pos, int, 2):
-            raise TypeError("pos needs to be (int x, int y)")
+    def absolute_move(self, index: int, pos: tuple[int, int]):
         if index not in range(len(self.surfaces)):
             raise ValueError("index needs to be between 0 and length of surfaces list")
         self.surfaces[index].pos = pos
         self.layer_modified[self.surfaces[index].layer] = True
 
-    def change_clip(self, index, clip):
-        if index not in range(self.layer_cnt):
-            raise ValueError("index needs to be between 0 and length of surfaces list")
-        if not correct_tuple(clip, ClipPosition, 2):
-            raise TypeError("clip needs to be (ClipPosition clip_h, ClipPosition clip_v)")
-        if not clip[0] in [ClipPosition.LEFT, ClipPosition.CENTER, ClipPosition.RIGHT]:
-            raise ValueError("The value of clip on x axis must be only LEFT, CENTER or RIGHT")
-        if not clip[1] in [ClipPosition.TOP, ClipPosition.MIDDLE, ClipPosition.BOTTOM]:
-            raise ValueError("The value of clip on y axis must be only TOP, MIDDLE or BOTTOM")
+    def change_clip(self, index: int, clip: tuple[ClipPosition, ClipPosition]):
         self.surfaces[index].set_clip(clip)
         self.layer_modified[self.surfaces[index].layer] = True
 
-    def resize(self, size):
-        if not correct_tuple(size, int, 2):
-            raise TypeError("size needs to be (int width, int height)")
+    def resize(self, size: tuple[int, int]):
         if size[0] <= 0 or size[1] <= 0:
             raise ValueError("size needs to have content upper to (0,0)")
         pygame.Surface.__init__(self, size, pygame.HWSURFACE |
@@ -227,24 +178,18 @@ class Layer(pygame.Surface):
             self.layer_modified[i] = True
             self.layer[i] = pygame.Surface(size, pygame.HWSURFACE | pygame.SRCALPHA)
 
-    def get_rect(self, index):
+    def get_rect(self, index: int):
         if index not in range(self.layer_cnt):
             raise ValueError("index needs to be between 0 and length of surfaces list")
         pos = self.surfaces[index].get_position(self.get_size())
         return (pos[0], pos[1], int(self.surfaces[index].surface.get_width() * self.surfaces[index].scale),
                 int(self.surfaces[index].surface.get_height() * self.surfaces[index].scale))
 
-    def relative_pos(self, index, pos):
-        if index not in range(self.layer_cnt):
-            raise ValueError("index needs to be between 0 and length of surfaces list")
-        if not correct_tuple(pos, int, 2):
-            raise TypeError("pos needs to be (int x, int y)")
+    def relative_pos(self, index: int, pos: tuple[int, int]):
         # WTF?
         pos = self.surfaces[index].get_position(self.get_size())
 
-    def focus_element(self, pos):
-        if not correct_tuple(pos, int, 2):
-            raise TypeError("pos needs to be (int x, int y)")
+    def focus_element(self, pos: tuple[int, int]):
         for i in range(self.layer_cnt):
             if self.layer_show[i]:
                 for j in range(len(self.surfaces)):

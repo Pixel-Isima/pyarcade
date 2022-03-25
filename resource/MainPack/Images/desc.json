@@ -24,19 +24,35 @@
       "type": "Frame",
       "margin": [ 2, 2, 2, 2 ],
       "image": "card_bg.png"
+    },
+    "THUMBNAIL_BACKGROUND" : {
+      "type": "Frame",
+      "margin": [ 1, 1, 1, 1 ],
+      "image": "thumbnail_bg.png"
     }
   },
   "icon": {
     "JOYSTICK": {
       "type": "Image",
       "image": "icon_joystick.png"
+    },
+    "BUTTON_HOME": {
+      "type": "Image",
+      "image": "icon_home_button.png"
     }
   },
-  "colors" : {
+  "color" : {
     "background" : [77, 55, 0]
   },
-  "metrics" : {
-    
+  "metric" : {
+    "WINDOW_WIDTH" : 200,
+    "WINDOW_HEIGHT" : 200,
+    "TOOLBAR_HEIGHT" : 0,
+    "CLOCK_MARGIN" : 5,
+    "CARD_ICON_SIZE" :  90,
+    "CARD_MARGIN" : 10,
+    "CARD_PADDING" :  5,
+    "BUTTON_ICON_MARGIN" : 2
   }
 }
 

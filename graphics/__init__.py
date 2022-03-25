@@ -11,3 +11,4 @@ from .background import *
 from .frame import *
 from .layer import *
 from .text import *
+from .direction import *

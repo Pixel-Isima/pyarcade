@@ -10,3 +10,4 @@
 
 from .clock import *
 from .toolbar import *
+from .cards import *

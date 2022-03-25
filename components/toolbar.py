@@ -27,9 +27,9 @@ class Toolbar(BaseElement):
 
         self.layer = Layer((1, 1), 3)
 
-        self.layer.add_surface(self.background, (0, 0), clip=(ClipPosition.LEFT, ClipPosition.BOTTOM))
-        self.layer.add_surface(Resource.getImage(Resource.ICON, Resource.ICON_JOYSTICK), (0, 0), clip=(ClipPosition.RIGHT, ClipPosition.BOTTOM))
-        self.layer.add_surface(self.logo, (0, 0), clip=(ClipPosition.CENTER, ClipPosition.BOTTOM))
+        self.bg_id = self.layer.add_surface(self.background, (0, 0), clip=(ClipPosition.LEFT, ClipPosition.BOTTOM))
+        self.joystick_id = self.layer.add_surface(Resource.getImage(Resource.ICON, Resource.ICON_JOYSTICK), (0, 0), clip=(ClipPosition.RIGHT, ClipPosition.BOTTOM))
+        self.logo_id = self.layer.add_surface(self.logo, (0, 0), clip=(ClipPosition.CENTER, ClipPosition.BOTTOM))
 
         self.resize((1, 1))
 
@@ -44,16 +44,24 @@ class Toolbar(BaseElement):
         self.background.resize((size[0], self.background_height))
         self.layer.resize(self.size)
 
-        self.layer.refresh()
-
-        pygame.Surface.blit(self, self.layer, (0, 0))
+        self.refresh()
 
     def hard_refresh(self):
         self.background = Resource.getImage(Resource.UI, Resource.UI_TOOLBAR_BACKGROUND)
         self.logo = Resource.getImage(Resource.MISC, Resource.PIXEL_LOGO)
         self.toolbar_height = max(self.background_height, self.logo.get_height())
 
+        self.layer.change_surface(self.bg_id, self.background)
+        self.layer.change_surface(self.logo_id, self.logo)
+        self.layer.change_surface(self.joystick_id, Resource.getImage(Resource.ICON, Resource.ICON_JOYSTICK))
+
+        self.resize(self.size)
         self.refresh()
+
+    def refresh(self):
+        self.layer.refresh()
+
+        pygame.Surface.blit(self, self.layer, (0, 0))
 
     def disable(self):
         pass
@@ -65,9 +73,6 @@ class Toolbar(BaseElement):
         pass
 
     def set_normal(self):
-        pass
-
-    def refresh(self):
         pass
 
     def event_enter(self):
