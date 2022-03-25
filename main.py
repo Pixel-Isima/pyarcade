@@ -1,10 +1,6 @@
 ﻿#!/bin/python2
 
 ################################################################################
-# Filename: main.py                                                            #
-# Created by: Venceslas Duet                                                   #
-# Created at: 04-07-2018                                                       #
-# Last update at: 03-15-2022                                                   #
 # Description: Main file for the interface                                     #
 # Licence: GNU GPL v3.0 (See LICENSE.MD for more information)                  #
 ################################################################################
@@ -55,15 +51,12 @@ class Game:
         )
 
         # Platform hack to support HiDPI screens
-        """
         if os.name == "nt":
             from ctypes import windll
             windll.user32.SetProcessDPIAware()
             self.screen_size = (windll.user32.GetSystemMetrics(0), windll.user32.GetSystemMetrics(1))
         else:
             self.screen_size = (pygame.display.Info().current_w, pygame.display.Info().current_h)
-        """
-        self.screen_size = (600,400)
 
         # Initialize the launcher modules
         # TODO: Adapter à la borne
@@ -129,7 +122,7 @@ class Game:
 
     def create_window(self):
         self.window = pygame.display.set_mode(self.get_size(),
-                                              # pygame.FULLSCREEN |
+                                              pygame.FULLSCREEN |
                                               pygame.DOUBLEBUF | pygame.HWSURFACE)
 
     def get_size(self):
