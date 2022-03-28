@@ -44,18 +44,16 @@ class Margin:
         )
 
     def from_index(self, idx : int) -> int:
-        match idx:
-            case 0: return self.top
-            case 1: return self.left
-            case 2: return self.bottom
-            case 3: return self.right
+        if idx == 0: return self.top
+        elif idx == 1: return self.left
+        elif idx == 2: return self.bottom
+        elif idx == 3: return self.right
 
     def to_index(self, idx: int, val: int):
-        match idx:
-            case 0: self.top = val
-            case 1: self.left = val
-            case 2: self.bottom = val
-            case 3: self.right = val
+        if idx == 0: self.top = val
+        elif idx == 1: self.left = val
+        elif idx == 2: self.bottom = val
+        elif idx == 3: self.right = val
 
     @staticmethod
     def empty() -> Margin:

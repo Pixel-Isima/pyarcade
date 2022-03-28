@@ -7,6 +7,7 @@ import pygame
 
 from resource import Resource
 
+
 class CardInfo:
     thumbnail : pygame.Surface
     title : str
@@ -41,9 +42,8 @@ class GameType(enum.Enum):
 
     @staticmethod
     def from_text(text: str) -> GameType:
-        match text:
-            case "native": return GameType.NATIVE
-            case "mame": return GameType.MAME
+        if text == "native": return GameType.NATIVE
+        elif text == "mame": return GameType.MAME
 
         raise ValueError("{} is not a valid game type".format(text))
 
@@ -72,8 +72,10 @@ class MameGameInfo:
             "-rp",
             self._game_path,
             "-skip_gameinfo",
-            "-nofilter" if self._scale_effect else "-filter",
-            self._executor
+            "-filter" if self._scale_effect else "-nofilter",
+            self._executor,
+            "-language",
+            "French"
         ]
 
 class NativeGameInfo:
@@ -167,9 +169,8 @@ class GameDB:
 
     @staticmethod
     def get_game_info(game, game_type: GameType) -> NativeGameInfo | MameGameInfo:
-        match game_type:
-            case GameType.NATIVE: return NativeGameInfo.from_data(game)
-            case GameType.MAME: return MameGameInfo.from_data(game, GameDB._mame_path)
+        if game_type == GameType.NATIVE: return NativeGameInfo.from_data(game)
+        elif game_type == GameType.MAME: return MameGameInfo.from_data(game, GameDB._mame_path)
 
     @staticmethod
     def parse_game(game) -> GameInfo:
@@ -210,19 +211,13 @@ class GameDB:
     @staticmethod
     def launch_game(game_id: int) -> bool:
         from subprocess import Popen
-        from pynput.keyboard import Key, Listener
 
         proc = Popen(GameDB._games[game_id].exec_args)
 
-        with Listener(on_release=GameDB.on_key_release) as listener:
-            listener.join()
-
-        proc.terminate()
-
-        return proc.returncode == 0
+        return proc.wait(1000)
 
     @staticmethod
-    def on_key_release(key):
+    def on_key_press(key):
         from pynput.keyboard import Key
 
         return key == Key.alt

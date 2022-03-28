@@ -6,15 +6,14 @@
 ################################################################################
 
 import os
+
 import pygame
-
-from resource import Resource
-from gamedb import GameDB
-
-from graphics import layer, background, Size
 
 import config
 from components import Toolbar, Clock, Cards
+from gamedb import GameDB
+from graphics import layer, background, Size
+from resource import Resource
 
 RESOURCE_PACK_PATH = "./resource/MainPack"
 GAME_INFO_PATH = "./data"
@@ -148,32 +147,28 @@ class Game:
             hard_refresh = False
 
             for event in [pygame.event.wait(1000)] + pygame.event.get():
-                match event.type:
-                    case pygame.QUIT:
-                        self.run = False
-                    case pygame.KEYDOWN:
-                        match event.key:
-                            case pygame.K_ESCAPE:
-                                k_esc = True
-                            case pygame.K_r:
-                                if not reload_pressed:
-                                    reload_pressed = True
-                                    Resource.load(RESOURCE_PACK_PATH)
-                                    hard_refresh = True
-                            case pygame.K_LEFT:
-                                self.cards.event_left()
-                                self.cards.refresh()
-                                self.refresh = True
-                            case pygame.K_RIGHT:
-                                self.cards.event_right()
-                                self.cards.refresh()
-                                self.refresh = True
-                    case pygame.KEYUP:
-                        match event.key:
-                            case pygame.K_r:
-                                reload_pressed = False
-                            case pygame.K_KP_ENTER | pygame.K_RETURN:
-                                GameDB.launch_game(self.cards.current)
+                if event.type == pygame.QUIT:
+                    self.run = False
+                elif event.type == pygame.KEYDOWN:
+                    if event.key == pygame.K_ESCAPE:
+                        k_esc = True
+                    elif event.key == pygame.K_r and not reload_pressed:
+                        reload_pressed = True
+                        Resource.load(RESOURCE_PACK_PATH)
+                        hard_refresh = True
+                    elif event.key == pygame.K_LEFT:
+                        self.cards.event_left()
+                        self.cards.refresh()
+                        self.refresh = True
+                    elif event.key == pygame.K_RIGHT:
+                        self.cards.event_right()
+                        self.cards.refresh()
+                        self.refresh = True
+                elif event.type == pygame.KEYUP:
+                    if event.key == pygame.K_r:
+                        reload_pressed = False
+                    elif event.key == pygame.K_KP_ENTER or event.key == pygame.K_RETURN:
+                        GameDB.launch_game(self.cards.current)
 
             if k_esc:
                 self.run = False
