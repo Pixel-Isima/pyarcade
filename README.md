@@ -6,7 +6,7 @@ Improved game launcher for the Pixel Arcade Cabinet
 
 ## Getting started
 
-To run this project, you must use `python >= 3.5` and `pygame >= 2.0`. For example, you can install it with the following commands:
+To run this project, you must use `python >= 3.10` and `pygame >= 2.0`. For example, you can install it with the following commands:
 ```bash
 sudo apt-get install python3 python3-pygame
 ```
@@ -15,7 +15,7 @@ sudo apt-get install python3 python3-pygame
 
 You can run the launcher with the following steps:
 ```bash
-python3 main.py
+python3 pyarcade.py
 ```
 
 # Add games
