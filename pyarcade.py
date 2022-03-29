@@ -57,10 +57,6 @@ class Game:
         else:
             self.screen_size = (pygame.display.Info().current_w, pygame.display.Info().current_h)
 
-        # Initialize the launcher modules
-        # TODO: Adapter à la borne
-        self.game = None
-
         # Initializing graphical objects
         self.window = None
         self.draw_canvas = layer.Layer(self.minsize.tuple, 5, 0)
@@ -132,6 +128,7 @@ class Game:
         k_left = False
         k_right = False
         k_launch = False
+        k_refresh = False
 
         for event in [pygame.event.wait(1000)] + pygame.event.get():
             match event.type:
@@ -148,7 +145,7 @@ class Game:
                 case pygame.KEYUP:
                     match event.key:
                         case pygame.K_r:
-                            Resource.load(self._resource_pack_path)
+                            k_refresh = True
                         case pygame.K_KP_ENTER | pygame.K_RETURN:
                             k_launch = True
                 case pygame.JOYAXISMOTION:
@@ -171,9 +168,9 @@ class Game:
             self.cards.refresh()
             self.refresh = True
 
-        return k_launch
+        return k_launch, k_refresh
 
-    def main(self):
+    def _loop(self):
         pygame.init()
         pygame.key.set_repeat(400, 100)
 
@@ -184,26 +181,19 @@ class Game:
 
         step = 0
 
-        # TODO: Use a specific function managing inputs
-
         while self.run:
-            hard_refresh = False
+            launch, refresh = self.get_input()
 
-            if self.get_input():
+            if refresh:
+                return True
+
+            if launch:
                 GameDB.launch_game(self.cards.current)
 
             if self.clock.update_hour():
                 self.refresh = True
 
                 self.clock.refresh()
-
-            if hard_refresh:
-                self.background.change_color(Resource.getColor(Resource.COLOR_BACKGROUND))
-                self.toolbar.hard_refresh()
-                self.clock.hard_refresh()
-                self.cards.hard_refresh()
-
-                self.refresh = True
 
             if self.refresh or step < 2:
                 self.refresh = False
@@ -223,8 +213,18 @@ class Game:
         config.Config.save()
         pygame.quit()
 
+        return False
+
+    def loop(self):
+        loop = True
+
+        while loop:
+            try:
+                loop = self._loop()
+            except:
+                pass
 
 if __name__ == "__main__":
     # Start game
     game = Game("./resource/MainPack", "./data")
-    game.main()
+    game.loop()
