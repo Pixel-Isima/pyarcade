@@ -14,9 +14,7 @@ from components import Toolbar, Clock, Cards
 from gamedb import GameDB
 from graphics import layer, background, Size
 from resource import Resource
-
-RESOURCE_PACK_PATH = "./resource/MainPack"
-GAME_INFO_PATH = "./data"
+from controller import Controllers, Axis
 
 
 class Game:
@@ -24,14 +22,16 @@ class Game:
     LAUNCHER_MENU = 0
     IN_GAME = 1
 
-    def __init__(self):
+    def __init__(self, resource_pack_path, game_info_path):
         self.refresh = None
         self.ratio = None
         self.last_hover_element = None
+        self._resource_pack_path = resource_pack_path
+        self._controller = Controllers()
 
         # Load resources
-        Resource.load(RESOURCE_PACK_PATH)
-        GameDB.load(GAME_INFO_PATH)
+        Resource.load(resource_pack_path)
+        GameDB.load(game_info_path)
 
         # Load the launcher's configuration file
         config.Config.load()
@@ -127,6 +127,52 @@ class Game:
     def get_size(self):
         return self.screen_size
 
+    def get_input(self):
+        k_esc = False
+        k_left = False
+        k_right = False
+        k_launch = False
+
+        for event in [pygame.event.wait(1000)] + pygame.event.get():
+            match event.type:
+                case pygame.QUIT:
+                    self.run = False
+                case pygame.KEYDOWN:
+                    match event.key:
+                        case pygame.K_ESCAPE:
+                            k_esc = True
+                        case pygame.K_LEFT:
+                            k_left = True
+                        case pygame.K_RIGHT:
+                            k_right = True
+                case pygame.KEYUP:
+                    match event.key:
+                        case pygame.K_r:
+                            Resource.load(self._resource_pack_path)
+                        case pygame.K_KP_ENTER | pygame.K_RETURN:
+                            k_launch = True
+                case pygame.JOYAXISMOTION:
+                    if self._controller.get_joystick_position(Axis.X_POSITIVE):
+                        k_right = True
+                    if self._controller.get_joystick_position(Axis.X_NEGATIVE):
+                        k_left = True
+                case pygame.JOYBUTTONUP:
+                    k_launch = self._controller.get_validation_action()
+
+        if k_esc:
+            self.run = False
+
+        if k_left:
+            self.cards.event_left()
+        elif k_right:
+            self.cards.event_right()
+
+        if k_left or k_right:
+            self.cards.refresh()
+            self.refresh = True
+
+        return k_launch
+
     def main(self):
         pygame.init()
         pygame.key.set_repeat(400, 100)
@@ -141,37 +187,10 @@ class Game:
         # TODO: Use a specific function managing inputs
 
         while self.run:
-            # k_up, k_down, k_right, k_left, k_enter, k_shift = False, False, False, False, False, False
-            k_esc = False
-            reload_pressed = False
             hard_refresh = False
 
-            for event in [pygame.event.wait(1000)] + pygame.event.get():
-                if event.type == pygame.QUIT:
-                    self.run = False
-                elif event.type == pygame.KEYDOWN:
-                    if event.key == pygame.K_ESCAPE:
-                        k_esc = True
-                    elif event.key == pygame.K_r and not reload_pressed:
-                        reload_pressed = True
-                        Resource.load(RESOURCE_PACK_PATH)
-                        hard_refresh = True
-                    elif event.key == pygame.K_LEFT:
-                        self.cards.event_left()
-                        self.cards.refresh()
-                        self.refresh = True
-                    elif event.key == pygame.K_RIGHT:
-                        self.cards.event_right()
-                        self.cards.refresh()
-                        self.refresh = True
-                elif event.type == pygame.KEYUP:
-                    if event.key == pygame.K_r:
-                        reload_pressed = False
-                    elif event.key == pygame.K_KP_ENTER or event.key == pygame.K_RETURN:
-                        GameDB.launch_game(self.cards.current)
-
-            if k_esc:
-                self.run = False
+            if self.get_input():
+                GameDB.launch_game(self.cards.current)
 
             if self.clock.update_hour():
                 self.refresh = True
@@ -207,5 +226,5 @@ class Game:
 
 if __name__ == "__main__":
     # Start game
-    game = Game()
+    game = Game("./resource/MainPack", "./data")
     game.main()
