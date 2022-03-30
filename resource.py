@@ -84,8 +84,10 @@ class Resource:
     ]
     colors = []
 
-    loaded = False
-    path = None
+    _loaded = False
+    _path = None
+
+    use_smooth_resize = False
 
     @staticmethod
     def extractColors(names: list[str], desc_info: dict[str, list[int]]) -> list[list[int]]:
@@ -144,7 +146,7 @@ class Resource:
 
     @staticmethod
     def load(path):
-        Resource.path = path
+        Resource._path = path
         descriptors = Resource.readFiles(path)
         # Read descriptor for images
         if (
@@ -172,6 +174,11 @@ class Resource:
         else:
             raise ValueError("All modules (misc, ui and icon) are not allowed. Please check desc.json")
 
+        try:
+            Resource.use_smooth_resize = bool(descriptors[1]["use_smooth_resize"])
+        except:
+            Resource.use_smooth_resize = False
+
         # Read descriptor for fonts
         for i in Resource.font_names:
             if i in descriptors[3]:
@@ -179,12 +186,12 @@ class Resource:
             else:
                 raise ValueError("Element called " + i + " for font is unavailable. Please check font.json")
 
-        Resource.loaded = True
+        Resource._loaded = True
 
     @staticmethod
     def reload():
-        Resource.loaded = False
-        Resource.load(Resource.path)
+        Resource._loaded = False
+        Resource.load(Resource._path)
 
     @staticmethod
     def generateFontElement(path, name, data):
@@ -249,7 +256,7 @@ class Resource:
 
     @staticmethod
     def getImage(cat, name):
-        if Resource.loaded:
+        if Resource._loaded:
             if cat == Resource.MISC:
                 return Resource.misc_images[name]
             elif cat == Resource.UI:
