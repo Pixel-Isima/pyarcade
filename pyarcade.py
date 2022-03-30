@@ -22,32 +22,19 @@ class Game:
     LAUNCHER_MENU = 0
     IN_GAME = 1
 
-    def __init__(self, resource_pack_path, game_info_path):
-        self.refresh = None
-        self.ratio = None
-        self.last_hover_element = None
-        self._resource_pack_path = resource_pack_path
-        self._controller = Controllers()
-
+    def _load_resources(self):
         # Load resources
-        Resource.load(resource_pack_path)
-        GameDB.load(game_info_path)
+        Resource.load(self._resource_pack_path)
+        GameDB.load(self._game_info_path)
 
-        # Load the launcher's configuration file
-        config.Config.load()
-
-        # Setting the icon and the title of the launcher
+        # Setting the icon of the launcher
         pygame.display.set_icon(Resource.getImage(Resource.MISC, Resource.MISC_ICON_32))
+
+        # Setting the title of the launcher
         pygame.display.set_caption("pyArcade launcher")
 
         # Hide cursor
-        # pygame.mouse.set_cursor((8, 8), (0, 0), (0, 0, 0, 0, 0, 0, 0, 0), (0, 0, 0, 0, 0, 0, 0, 0))
-
-        # Setting the minimal page size
-        self.minsize = Size(
-            Resource.getMetric(Resource.METRIC_WINDOW_WIDTH),
-            Resource.getMetric(Resource.METRIC_WINDOW_HEIGHT)
-        )
+        pygame.mouse.set_cursor((8, 8), (0, 0), (0, 0, 0, 0, 0, 0, 0, 0), (0, 0, 0, 0, 0, 0, 0, 0))
 
         # Platform hack to support HiDPI screens
         if os.name == "nt":
@@ -57,19 +44,18 @@ class Game:
         else:
             self.screen_size = (pygame.display.Info().current_w, pygame.display.Info().current_h)
 
+        # Setting the minimal page size
+        self.minsize = Size(
+            Resource.getMetric(Resource.METRIC_WINDOW_WIDTH),
+            Resource.getMetric(Resource.METRIC_WINDOW_HEIGHT)
+        )
+
         # Initializing graphical objects
-        self.window = None
         self.draw_canvas = layer.Layer(self.minsize.tuple, 5, 0)
         self.background = background.Background(self.minsize.tuple, Resource.getColor(Resource.COLOR_BACKGROUND))
         self.toolbar = Toolbar()
         self.clock = Clock()
         self.cards = Cards(GameDB.get_cards(), self.minsize)
-
-
-        # Initializing the software state variables
-        self.run = False
-        self.err = False
-        self.errName = ""
 
         # Resizing the window
         self.resize(self.get_size())
@@ -83,8 +69,26 @@ class Game:
         self.card_id = self.draw_canvas.add_surface(self.cards, (0, (self.clock.get_height() - self.toolbar.get_height())//2),
                                                     clip=(layer.ClipPosition.CENTER, layer.ClipPosition.MIDDLE))
 
+
+    def __init__(self, resource_pack_path, game_info_path):
+        self.refresh = None
+        self.ratio = None
+        self.last_hover_element = None
+        self._resource_pack_path = resource_pack_path
+        self._game_info_path = game_info_path
+        self._controller = Controllers()
+
+        # Initializing graphical objects
+        self.window = None
+
+        # Initializing the software state variables
+        self.run = False
+        self.err = False
+        self.errName = ""
+
+        self._load_resources()
+
     def resize(self, new_size):
-        # TODO: Avoid the vertical line at the right of the screen
         # Checking the size of the window
         if new_size[0] < self.minsize.width or new_size[1] < self.minsize.height:
             if new_size[0] < self.minsize.width:
@@ -185,6 +189,7 @@ class Game:
             launch, refresh = self.get_input()
 
             if refresh:
+                Resource.reload()
                 return True
 
             if launch:
@@ -205,8 +210,7 @@ class Game:
                 self.draw_canvas.change_surface(self.card_id, self.cards)
                 self.draw_canvas.refresh()
 
-                to_render = pygame.transform.scale(self.draw_canvas, self.get_size())
-                self.window.blit(to_render, (0, 0))
+                self.blit_to_window(self.draw_canvas)
 
                 pygame.display.flip()
 
@@ -215,11 +219,18 @@ class Game:
 
         return False
 
+    def blit_to_window(self, origin):
+        if Resource.use_smooth_resize:
+            pygame.transform.smoothscale(origin, self.window.get_size(), self.window)
+        else:
+            pygame.transform.scale(origin, self.window.get_size(), self.window)
+
     def loop(self):
         loop = True
 
         while loop:
             try:
+                self._load_resources()
                 loop = self._loop()
             except:
                 pass
