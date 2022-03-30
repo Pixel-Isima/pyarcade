@@ -59,7 +59,7 @@ class Controllers:
 
     def get_validation_action(self) -> bool:
         for controller in self._controllers:
-            if controller.get_button(0):
+            if controller.get_button(5):
                 return True
         return False
 
