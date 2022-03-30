@@ -158,6 +158,7 @@ class Game:
                     if self._controller.get_joystick_position(Axis.X_NEGATIVE):
                         k_left = True
                 case pygame.JOYBUTTONUP:
+                    self._controller.print_all()
                     k_launch = self._controller.get_validation_action()
 
         if k_esc:
@@ -237,5 +238,5 @@ class Game:
 
 if __name__ == "__main__":
     # Start game
-    game = Game("./resource/MainPack", "./data")
+    game = Game("./resource/Voxel", "./data")
     game.loop()

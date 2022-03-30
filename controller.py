@@ -62,3 +62,9 @@ class Controllers:
             if controller.get_button(0):
                 return True
         return False
+
+    def print_all(self):
+        for controller in self._controllers:
+            for button in range(controller.get_numbuttons()):
+                if controller.get_button(button):
+                    print("Controller: {}, button {}".format(controller.get_id(), button))
