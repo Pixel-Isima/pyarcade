@@ -21,7 +21,7 @@ class Clock(BaseElement):
         self.layer = Layer((1, 1), 2)
 
         self.bg_id = self.layer.add_surface(self.background, (0, 0), clip=(ClipPosition.CENTER, ClipPosition.TOP))
-        self.clock_id = self.layer.add_surface(pygame.Surface((1, 1)), (0, 1), clip=(ClipPosition.CENTER, ClipPosition.TOP))
+        self.clock_id = self.layer.add_surface(pygame.Surface((1, 1)), (0, 1), clip=(ClipPosition.CENTER, ClipPosition.MIDDLE))
 
         self.refresh()
 

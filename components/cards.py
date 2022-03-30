@@ -104,7 +104,10 @@ class Cards(BaseElement):
 
         thumbnail_bg.generate(ret, thumbnail_frame_rect)
 
-        ret.blit(info.thumbnail, thumbnail_rect.tuple)
+        ret.blit(
+            pygame.transform.scale(info.thumbnail, thumbnail_rect.size.tuple),
+            thumbnail_rect.tuple
+        )
 
         if active:
             ret.blit(action, action_rect.tuple)

@@ -22,13 +22,19 @@ class Toolbar(BaseElement):
     def __init__(self):
         self.background = Resource.getImage(Resource.UI, Resource.UI_TOOLBAR_BACKGROUND)
         self.logo = Resource.getImage(Resource.MISC, Resource.PIXEL_LOGO)
-        self.background_height = 17
+        self.background_height = int(Resource.getMetric(Resource.METRIC_TOOLBAR_HEIGHT))
         self.toolbar_height = max(self.background_height, self.logo.get_height())
 
         self.layer = Layer((1, 1), 3)
 
+        joystick_icon = Resource.getImage(Resource.ICON, Resource.ICON_JOYSTICK)
+
         self.bg_id = self.layer.add_surface(self.background, (0, 0), clip=(ClipPosition.LEFT, ClipPosition.BOTTOM))
-        self.joystick_id = self.layer.add_surface(Resource.getImage(Resource.ICON, Resource.ICON_JOYSTICK), (0, 0), clip=(ClipPosition.RIGHT, ClipPosition.BOTTOM))
+        self.joystick_id = self.layer.add_surface(
+            joystick_icon,
+            (0, (self.background_height - joystick_icon.get_height()) // 2),
+            clip=(ClipPosition.RIGHT, ClipPosition.BOTTOM)
+        )
         self.logo_id = self.layer.add_surface(self.logo, (0, 0), clip=(ClipPosition.CENTER, ClipPosition.BOTTOM))
 
         self.resize((1, 1))
