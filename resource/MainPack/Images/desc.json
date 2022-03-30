@@ -47,7 +47,7 @@
   "metric" : {
     "WINDOW_WIDTH" : 200,
     "WINDOW_HEIGHT" : 200,
-    "TOOLBAR_HEIGHT" : 0,
+    "TOOLBAR_HEIGHT" : 17,
     "CLOCK_MARGIN" : 5,
     "CARD_ICON_SIZE" :  90,
     "CARD_MARGIN" : 10,
