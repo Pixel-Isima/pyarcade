@@ -22,6 +22,8 @@ class Game:
     LAUNCHER_MENU = 0
     IN_GAME = 1
 
+    wait_button_release = False
+
     def _load_resources(self):
         # Load resources
         Resource.load(self._resource_pack_path)
@@ -134,6 +136,8 @@ class Game:
         k_launch = False
         k_refresh = False
 
+        button_pressed = False
+
         for event in [pygame.event.wait(1000)] + pygame.event.get():
             match event.type:
                 case pygame.QUIT:
@@ -159,16 +163,21 @@ class Game:
                         k_left = True
                 case pygame.JOYBUTTONDOWN:
                     self._controller.print_all()
+                    button_pressed = True
                     k_launch = self._controller.get_validation_action()
                     k_refresh = self._controller.get_insert_coin_action()
 
         if k_esc:
             self.run = False
 
-        if k_left:
-            self.cards.event_left()
-        elif k_right:
-            self.cards.event_right()
+        if not self.wait_button_release:
+            if k_left:
+                self.cards.event_left()
+            elif k_right:
+                self.cards.event_right()
+
+        if not button_pressed:
+            self.wait_button_release = False
 
         if k_left or k_right:
             self.cards.refresh()
@@ -196,6 +205,7 @@ class Game:
 
             if launch:
                 GameDB.launch_game(self.cards.current)
+                self.wait_button_release = True
 
             if self.clock.update_hour():
                 self.refresh = True
