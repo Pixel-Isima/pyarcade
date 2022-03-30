@@ -63,6 +63,9 @@ class Controllers:
                 return True
         return False
 
+    def get_insert_coin_action(self) -> bool:
+        return self._controllers[0].get_button(9)
+
     def print_all(self):
         for controller in self._controllers:
             for button in range(controller.get_numbuttons()):

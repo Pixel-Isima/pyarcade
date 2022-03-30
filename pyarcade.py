@@ -160,6 +160,7 @@ class Game:
                 case pygame.JOYBUTTONDOWN:
                     self._controller.print_all()
                     k_launch = self._controller.get_validation_action()
+                    k_refresh = self._controller.get_insert_coin_action()
 
         if k_esc:
             self.run = False
