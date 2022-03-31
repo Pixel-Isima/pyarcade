@@ -148,6 +148,7 @@ class Resource:
     def load(path):
         Resource._path = path
         descriptors = Resource.readFiles(path)
+        Resource._loaded = False
         # Read descriptor for images
         if (
                 "misc" in descriptors[1] and
