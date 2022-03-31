@@ -181,6 +181,7 @@ class Resource:
             Resource.use_smooth_resize = False
 
         # Read descriptor for fonts
+        Resource.fonts = []
         for i in Resource.font_names:
             if i in descriptors[3]:
                 Resource.fonts.append(Resource.generateFontElement(descriptors[2], i, descriptors[3][i]))
