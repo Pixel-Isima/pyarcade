@@ -37,7 +37,7 @@ class Text:
     def gen_text(self, text : str, color: pygame.Color | None = None):
         bts = []
         nl = 0
-        actual = 0
+        current = 0
         maximum = 0
 
         top_offset = self._letter_size.height - self._ascender_height - self._baseline
@@ -52,13 +52,13 @@ class Text:
         for i in text:
             if i == "\n":
                 nl = nl + 1
-                maximum = max(maximum, actual)
-                actual = 0
+                maximum = max(maximum, current)
+                current = 0
             else:
-                actual = actual + 1
+                current = current + 1
             bts.append(ord(i))
 
-        maximum = max(maximum, actual)
+        maximum = max(maximum, current)
 
         ret = pygame.Surface((
             maximum * self._letter_size.width,
