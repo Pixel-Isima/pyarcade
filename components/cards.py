@@ -71,7 +71,7 @@ class Cards(BaseElement):
         action_rect = Rect(Position(0, 0), Size(0, 0))
 
         if active:
-            action_title = Resource.getFont(Resource.FONT_DEFAULT).gen_text("Jouer")
+            action_title = Resource.getFont(Resource.FONT_DEFAULT).gen_text("Jouer ")
             action_icon = Resource.getImage(Resource.ICON, Resource.ICON_BUTTON_HOME)
 
             buf_w = min(action_title.get_width() + action_icon.get_width(), icon_size)
@@ -100,7 +100,7 @@ class Cards(BaseElement):
 
         background.generate(ret, Rect(Position(0, 0), Size(width, height)))
 
-        ret.blit(title_surface, title_rect.tuple, Rect(Position(0,0), title_rect.size).tuple)
+        ret.blit(title_surface, title_rect.tuple, Rect(Position(0, 0), title_rect.size).tuple)
 
         thumbnail_bg.generate(ret, thumbnail_frame_rect)
 
@@ -204,7 +204,7 @@ class Cards(BaseElement):
 if __name__ == "__main__":
     pygame.init()
 
-    Resource.load("../resource/MainPack")
+    Resource.load("../resource/Voxel")
 
     cards = Cards([
         CardInfo.generate_random(),
@@ -224,7 +224,7 @@ if __name__ == "__main__":
 
     pygame.display.flip()
 
-    pygame.time.wait(5000)
+    pygame.time.wait(500)
 
     cards.event_left()
 
@@ -233,7 +233,7 @@ if __name__ == "__main__":
 
     pygame.display.flip()
 
-    pygame.time.wait(5000)
+    pygame.time.wait(500)
 
     pygame.quit()
 
