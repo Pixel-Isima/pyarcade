@@ -47,9 +47,11 @@ class Game:
             self.screen_size = (pygame.display.Info().current_w, pygame.display.Info().current_h)
 
         # Setting the minimal page size
+        w = Resource.getMetric(Resource.METRIC_WINDOW_WIDTH)
+        h = Resource.getMetric(Resource.METRIC_WINDOW_HEIGHT)
         self.minsize = Size(
-            Resource.getMetric(Resource.METRIC_WINDOW_WIDTH),
-            Resource.getMetric(Resource.METRIC_WINDOW_HEIGHT)
+            w if w > -1 else self.screen_size[0] - 1,
+            h if h > -1 else self.screen_size[1] - 1,
         )
 
         # Initializing graphical objects
