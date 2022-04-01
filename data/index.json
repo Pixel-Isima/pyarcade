@@ -1,5 +1,5 @@
 {
-  "mame-path" : "/home/venceslas/git/pyarcade/data/mame",
+  "mame-path" : "",
   "games" : [
     {
       "name": "Pacman",
@@ -31,6 +31,14 @@
       "type": "mame",
       "card-thumbnail": "dkong-90x.png",
       "exec": "dkong",
+      "scale-filter": false
+    },
+    {
+      "name": "Breakout",
+      "copyright": "1978 Atari",
+      "type": "mame",
+      "card-thumbnail": "breakout-90x.png",
+      "exec": "sbrkout",
       "scale-filter": false
     },
     {
