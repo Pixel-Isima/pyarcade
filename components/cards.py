@@ -71,10 +71,11 @@ class Cards(BaseElement):
         action_rect = Rect(Position(0, 0), Size(0, 0))
 
         if active:
-            action_title = Resource.getFont(Resource.FONT_DEFAULT).gen_text("Jouer ")
+            icon_margin = Resource.getMetric(Resource.METRIC_BUTTON_ICON_MARGIN)
+            action_title = Resource.getFont(Resource.FONT_DEFAULT).gen_text("Jouer")
             action_icon = Resource.getImage(Resource.ICON, Resource.ICON_BUTTON_HOME)
 
-            buf_w = min(action_title.get_width() + action_icon.get_width(), icon_size)
+            buf_w = min(action_title.get_width() + action_icon.get_width() + icon_margin, icon_size)
             buf_h = max(action_title.get_height(), action_icon.get_height())
 
             action = pygame.Surface((buf_w, buf_h), pygame.SRCALPHA)
@@ -84,7 +85,7 @@ class Cards(BaseElement):
 
             action.blit(action_icon, (x, y))
 
-            x = action_icon.get_width() + Resource.getMetric(Resource.METRIC_BUTTON_ICON_MARGIN)
+            x = action_icon.get_width() + icon_margin
             y = (buf_h - action_title.get_height()) // 2
 
             action.blit(action_title, (x, y))
